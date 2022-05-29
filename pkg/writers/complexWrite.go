@@ -25,6 +25,7 @@ func ComplexWrite(s string, byteCount int, outFile string) {
 	if byteCount > len(s) {
 		var splitInto = int(math.Floor(math.Sqrt(float64(byteCount-len(baseDataToWrite))) / 8))
 		var toWritePerWrite = byteCount / splitInto
+		var missingBytes = byteCount - len(baseDataToWrite) - splitInto*toWritePerWrite
 
 		fmt.Println("Writing", toWritePerWrite, "bytes per write for", splitInto, "writes")
 
@@ -34,5 +35,9 @@ func ComplexWrite(s string, byteCount int, outFile string) {
 			util.Check(err)
 			f.Sync()
 		}
+
+		_, err := f.WriteString(strings.Repeat(charToRepeat, missingBytes))
+		util.Check(err)
+		f.Sync()
 	}
 }
