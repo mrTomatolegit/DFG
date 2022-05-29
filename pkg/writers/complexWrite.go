@@ -2,6 +2,7 @@ package writers
 
 import (
 	"fmt"
+	"github.com/mrTomatolegit/DFG/internal/presentation"
 	"github.com/mrTomatolegit/DFG/pkg/util"
 	"math"
 	"os"
@@ -16,13 +17,16 @@ func ComplexWrite(s string, byteCount int, outFile string) {
 	} else {
 		baseDataToWrite = s[:byteCount]
 	}
+	var totalWritten int
 
 	f, err := os.Create(outFile)
 	util.Check(err)
 	defer f.Close()
 
 	f.WriteString(baseDataToWrite)
+	totalWritten += len(baseDataToWrite)
 	if byteCount > len(s) {
+		writer, quit := presentation.CreateUpdateTicker(&totalWritten, &byteCount)
 		var splitInto = int(math.Floor(math.Sqrt(float64(byteCount-len(baseDataToWrite))) / 8))
 		var toWritePerWrite = byteCount / splitInto
 		var missingBytes = byteCount - len(baseDataToWrite) - splitInto*toWritePerWrite
@@ -33,11 +37,16 @@ func ComplexWrite(s string, byteCount int, outFile string) {
 		for i := 0; i < splitInto; i++ {
 			_, err := f.WriteString(strings.Repeat(charToRepeat, toWritePerWrite))
 			util.Check(err)
+			totalWritten += toWritePerWrite
 			f.Sync()
 		}
 
 		_, err := f.WriteString(strings.Repeat(charToRepeat, missingBytes))
 		util.Check(err)
+		totalWritten += toWritePerWrite
 		f.Sync()
+
+		presentation.UpdateProgressBar(writer, totalWritten, byteCount)
+		close(quit)
 	}
 }

@@ -13,6 +13,7 @@ import (
 const MASTER_STRING = "awo"
 
 func main() {
+	presentation.StartTimer()
 	if len(os.Args) == 1 {
 		// No size argument was provided, print instructions
 		presentation.PrintHelp()
@@ -23,8 +24,8 @@ func main() {
 
 	if float64(byteCount) >= (math.Pow(1024, 3)) {
 		// The file is bigger than a gigabyte, print a warning
-		fmt.Println("WARNING: The requested file generation is quite large. This may take a longer time to generate. Make sure you have enough Disk Space.")
-		fmt.Println("Using a slower method to avoid memory overutilization.")
+		fmt.Println("\u001b[33mWARNING: The requested file generation is quite large.\nThis may take a longer time to generate. Make sure you have enough Disk Space.")
+		fmt.Print("Using a slower method to avoid using a lot of memory.\u001b[0m\n\n")
 		writers.ComplexWrite(MASTER_STRING, byteCount, output)
 	} else {
 		// The file shouldn't be a danger to memory
@@ -33,5 +34,7 @@ func main() {
 
 	fileInfo, err := os.Lstat(output)
 	util.Check(err)
-	fmt.Println(fileInfo.Size(), "bytes written to", output)
+	fmt.Println("\u001b[32m\n" + fmt.Sprint(fileInfo.Size()), "bytes written to", output)
+	presentation.PrintTimeElapsed()
+	fmt.Print("\u001b[0m")
 }

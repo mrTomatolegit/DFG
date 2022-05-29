@@ -7,7 +7,7 @@ import (
 )
 
 func SimpleWrite(s string, byteCount int, outFile string) {
-	fmt.Println("Writing", byteCount, "bytes to", outFile+"\n")
+	fmt.Println("Writing", byteCount, "bytes to", outFile)
 	if byteCount > len(s) {
 		repChar := string(s[len(s)-1])
 		os.WriteFile(outFile, []byte(s+strings.Repeat(repChar, byteCount-len(s))), 0644)
