@@ -1,7 +1,14 @@
 VERSION=0.2.0
 
+OSFLAG :=
+ifeq ($(OS),Windows_NT)
+	OSFLAG += windows
+else
+	OSFLAG += dfg
+endif
+
 build:
-	go build -o ./bin/dfg.exe ./cmd/dfg/dfg.go
+	go build -o ./bin/dfg.exe ./cmd/${OSFLAG}/dfg.go
 
 run:
 	go run main.go
