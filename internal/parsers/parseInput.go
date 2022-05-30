@@ -1,40 +1,59 @@
 package parsers
 
 import (
-	"github.com/mrTomatolegit/DFG/pkg/util"
 	"os"
-	"path/filepath"
+	// "path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/mrTomatolegit/DFG/internal/util"
 )
 
-func ParseInput() (int, string) {
-	if !strings.Contains(strings.ToUpper(os.Args[1]), "B") {
+func parseByteCount(s string) int {
+	s = strings.ToUpper(s)
+	if !strings.Contains(s, "B") {
 		// No unit argument was provided
-		os.Args[1] += "BY"
+		s += "BY"
 	}
 
-	byteCount64, err := strconv.ParseInt(string(os.Args[1][:len(os.Args[1])-2]), 10, 32) // Get the file size provided
+	byteCount64, err := strconv.ParseInt(string(s[:len(s)-2]), 10, 32) // Get the file size provided
 	util.Check(err)
 	byteCount := int(byteCount64)
-	measure := strings.ToUpper(os.Args[1][len(os.Args[1])-2:]) // Get the unit (provided or autofilled)
+	measure := strings.ToUpper(s[len(s)-2:]) // Get the unit (provided or autofilled)
 
-	// Get the output file (provided or autofilled):
-	wd, err := os.Getwd()
-	util.Check(err)
+	util.ApplyMeasurement(&byteCount, measure)
 
-	var output string
+	return byteCount
+}
 
-	if len(os.Args) > 2 { // If file specified
-		output = os.Args[2]
-		if !strings.HasPrefix(output, "/") && !strings.HasPrefix(output, "./") {
-			output = filepath.Join(wd, output)
-		}
-	} else { // Autofill
-		output = filepath.Join(wd, "/output.dfg")
+// Returns non ascii runes as '.'
+func asciiOnly(r rune) rune {
+	if int(r) > 255 { // Ascii characters end at 255
+		return '.'
 	}
+	return r
+}
+func parseFileContent(content util.FileContent) util.FileContent {
+	// Only allow ASCII characters
+	// Unicode characters use more bytes than ASCII characters
+	// which breaks the file size calculation
+	content.Prefix = strings.Map(asciiOnly, content.Prefix)
+	content.Repeat = strings.Map(asciiOnly, content.Repeat)
+	content.Suffix = strings.Map(asciiOnly, content.Suffix)
+	return content
+}
 
-	util.ApplyMeasurement(&byteCount, &measure)
+type Flags struct {
+	ByteCount   int
+	OutFile     string
+	FileContent util.FileContent
+	WriteMem    int
+}
 
-	return byteCount, output
+// Gets the filesize which can be without flags as the first argument
+func ParseBytesFlagless(s *string) {
+	if !strings.HasPrefix(os.Args[1], "-") {
+		*s = os.Args[1]
+		os.Args = append(os.Args[1:], os.Args[2:]...) // Fix for flags only working on index 1
+	}
 }

@@ -1,3 +1,5 @@
+// The difference here is that when the app is double clicked it shows an error message and then waits for enter.
+// Difference is at line 19:5
 package main
 
 import (
@@ -11,7 +13,14 @@ import (
 )
 
 func main() {
-	parsers.DefineFlags() // Define the flags for the help message
+	parsers.DefineFlags()           // Define the flags for the help message
+	if parsers.IsDoubleClickRun() { // If the user double clicked the app
+		fmt.Print("You need to run this from the command prompt\n\n")
+		presentation.PrintHelp()
+		fmt.Println("\nPlease press ENTER to close this window")
+		os.Stdin.Read([]byte{0}) // Wait for ENTER
+		return
+	}
 	presentation.StartTimer()
 	if len(os.Args) == 1 {
 		// No size arguments were provided, print instructions

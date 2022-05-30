@@ -4,8 +4,8 @@ import (
 	"math"
 )
 
-func ApplyMeasurement(byteCount *int, measure *string) *int {
-	switch *measure {
+func ApplyMeasurement(byteCount *int, measure string) *int {
+	switch measure {
 	case "KB": // Kilobyte
 		*byteCount *= int(math.Pow(1024, 1))
 	case "MB": // Megabyte

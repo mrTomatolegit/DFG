@@ -31,7 +31,7 @@ func CreateUpdateTicker(currentCount *int, objectiveCount *int) (*uilive.Writer,
 	return writer, quit
 }
 
-func MakeProgressBar(percentage float64) string {
+func makeProgressBar(percentage float64) string {
 	var quarterP = int(math.Round(float64(percentage / 4)))
 	var bar string
 	for i := 0; i < quarterP; i++ {
@@ -45,7 +45,7 @@ func MakeProgressBar(percentage float64) string {
 
 func MakeProgressLine(currentCount int, objectiveCount int) string {
 	var percentage = float64(currentCount) / float64(objectiveCount) * 100
-	return fmt.Sprintf("%v/%v [%s] %v%%\n", currentCount, objectiveCount, MakeProgressBar(percentage), math.Floor(percentage))
+	return fmt.Sprintf("%v/%v [%s] %v%%\n", currentCount, objectiveCount, makeProgressBar(percentage), math.Floor(percentage))
 }
 
 func UpdateProgressBar(writer *uilive.Writer, currentCount int, objectiveCount int) {
