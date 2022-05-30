@@ -30,4 +30,4 @@ I use this to test my [discord bot's](https://docs.combot.xyz) ability to copy f
 
 # License
 
-[The Unlicense license](./LICENSE)
+[The MIT license](./LICENSE)
